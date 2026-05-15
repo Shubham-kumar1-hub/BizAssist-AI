@@ -4,6 +4,9 @@ from pydantic import BaseModel, EmailStr
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
+from datetime import datetime
+
+
 from app.ai import create_lead_if_needed, run_simple_agents, run_workflow, save_document_to_vector_db, search_documents
 from app.auth import check_password, create_token, get_current_user, hash_password
 from app.config import settings
@@ -106,6 +109,7 @@ def chat(data: ChatInput, db: Session = Depends(get_db), user: User = Depends(ge
 
     lead = create_lead_if_needed(db, data.message, conversation.id, data.customer_name, data.customer_email)
     conversation.summary = data.message[:300]
+    conversation.updated_at = datetime.utcnow()
     db.commit()
 
     return {

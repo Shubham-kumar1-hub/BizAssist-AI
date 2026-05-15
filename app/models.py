@@ -24,6 +24,8 @@ class Conversation(Base):
     customer_email = Column(String(255), nullable=True)
     summary = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow)
+
 
 
 class Message(Base):
