@@ -14,6 +14,7 @@ from app.database import Base, engine, get_db
 from app.models import Conversation, Document, Lead, Message, User, WorkflowLog
 
 
+#This automatically creates database tables.
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title=settings.app_name, version="1.0.0")
