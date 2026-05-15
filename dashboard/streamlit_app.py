@@ -7,8 +7,8 @@ import streamlit as st
 
 API_URL = os.getenv("API_URL", "http://localhost:8000")
 
-st.set_page_config(page_title="Smart AI Business Assistant", layout="wide")
-st.title("Smart AI Business Assistant")
+st.set_page_config(page_title="BizAssist AI", layout="wide")
+st.title("BizAssist AI")
 
 
 def api_request(method: str, path: str, token: str | None = None, **kwargs):

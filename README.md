@@ -1,127 +1,106 @@
-# Smart AI Business Assistant Platform
+# BizAssist AI
 
-This is a production-oriented MVP for the internship technical assessment. It is built for a generic small or medium business that wants one assistant to answer customer questions, capture leads, run simple automations, remember conversations, and show admin analytics.
+BizAssist AI is a simple AI business assistant platform for small and medium businesses. It can answer customer questions using uploaded documents, capture leads, run small automations, and show everything in an admin dashboard.
 
-The project is intentionally simple and easy to explain. It focuses on connected features and clean architecture instead of unnecessary complexity.
+This version is intentionally kept simple so it is easy to understand and explain in a 5-minute demo.
 
-## Features
+## Main Features
 
-- FastAPI backend with modular routes and services
-- JWT signup and login
-- AI assistant powered by Groq
-- Multi-turn conversation memory stored in PostgreSQL
-- RAG document upload with chunking and ChromaDB vector retrieval
-- Simple Planner, Executor, and Validator agent orchestration
-- Natural lead capture and hot/warm/cold classification
+- FastAPI backend
+- Streamlit dashboard
+- PostgreSQL database
+- SQLAlchemy database models
+- Groq LLM for AI responses
+- ChromaDB for document search / RAG
+- JWT login system
+- Lead capture and hot/warm/cold classification
 - Three workflow automations:
-  - Lead follow-up email generation
+  - Lead follow-up generation
   - CRM CSV export
-  - Conversation summary and next action generation
-- Streamlit admin dashboard
-- Analytics for leads, documents, conversations, messages, AI usage, and workflow logs
-- Docker and Docker Compose support
-- Fallback AI response when `GROQ_API_KEY` is not configured
+  - Conversation summary
+- Analytics and logs dashboard
+- Docker Compose setup
 
-## Tech Stack
-
-- Backend: FastAPI, Python
-- Dashboard: Streamlit
-- Database: PostgreSQL with SQLAlchemy
-- Vector store: ChromaDB
-- LLM: Groq chat completions
-- Auth: JWT
-- Deployment: Docker
-
-## Project Structure
+## Folder Structure
 
 ```text
 app/
-  api/          API routes for auth, assistant, documents, leads, workflows, analytics
-  core/         Configuration and security helpers
-  db/           Database setup for PostgreSQL or SQLite fallback
-  models/       SQLAlchemy database models
-  schemas/      Pydantic request and response schemas
-  services/     LLM, RAG, agents, lead capture, automation logic
-  utils/        Logging setup
-dashboard/      Streamlit admin dashboard
-sample_docs/    Demo business document for RAG testing
-data/           Local database, Chroma files, CSV exports
+  main.py       FastAPI routes and API logic
+  config.py     Loads settings from .env
+  database.py   Database connection
+  models.py     Database tables
+  auth.py       Login, password hashing, JWT
+  ai.py         Groq, RAG, lead logic, workflows
+
+dashboard/
+  streamlit_app.py  Admin dashboard
+
+sample_docs/
+  business_faq.txt  Sample file for testing document upload
 ```
+
+## How The Project Works
+
+1. Admin logs in from the dashboard.
+2. Admin uploads a business document.
+3. The backend reads the document and stores chunks in ChromaDB.
+4. Customer asks a question.
+5. The app searches relevant document chunks.
+6. Groq generates an answer using the document context.
+7. If the customer shows interest, the app creates a lead.
+8. Admin can view leads, logs, documents, and analytics.
+9. Admin can run simple automations.
 
 ## Setup
 
-### 1. Clone the repository
+### 1. Create `.env`
 
-```bash
-git clone <your-github-repo-link>
-cd <repo-folder>
-```
-
-### 2. Create environment file
-
-Copy `.env.example` to `.env`.
-
-```bash
-cp .env.example .env
-```
-
-Update the Groq API key:
+Create a `.env` file in the project root:
 
 ```env
-GROQ_API_KEY=your-groq-api-key
-```
-
-The default database URL uses PostgreSQL:
-
-```env
+APP_NAME=BizAssist AI
+SECRET_KEY=my-secret-key
 DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/bizassist
+GROQ_API_KEY=your-groq-api-key
+GROQ_MODEL=llama-3.1-8b-instant
+CHROMA_PATH=./data/chroma
 ```
 
-For quick local testing without PostgreSQL, you can temporarily use SQLite:
+For quick testing without PostgreSQL, you can temporarily use:
 
 ```env
 DATABASE_URL=sqlite:///./data/business_assistant.db
 ```
 
-### 3. Start PostgreSQL
-
-The easiest option is Docker:
-
-```bash
-docker compose up db
-```
-
-If PostgreSQL is already installed locally, create a database named `bizassist`.
-
-### 4. Create virtual environment
+### 2. Create Virtual Environment
 
 ```bash
 python -m venv .venv
-```
-
-Activate it:
-
-```bash
-# Windows
 .venv\Scripts\activate
-
-# macOS/Linux
-source .venv/bin/activate
 ```
 
-### 5. Install dependencies
+### 3. Install Requirements
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 6. Run backend
+### 4. Start PostgreSQL
 
 ```bash
+docker compose up db
+```
+
+### 5. Start Backend
+
+Open another terminal:
+
+```bash
+.venv\Scripts\activate
 uvicorn app.main:app --reload
 ```
 
-Backend will run at:
+Backend:
 
 ```text
 http://localhost:8000
@@ -133,86 +112,50 @@ API docs:
 http://localhost:8000/docs
 ```
 
-### 7. Run dashboard
+### 6. Start Dashboard
 
-Open a second terminal:
+Open another terminal:
 
 ```bash
+.venv\Scripts\activate
 streamlit run dashboard/streamlit_app.py
 ```
 
-Dashboard will run at:
+Dashboard:
 
 ```text
 http://localhost:8501
 ```
 
-## Docker Setup
-
-Create `.env` first, then run:
+## Docker Full Run
 
 ```bash
 docker compose up --build
 ```
 
-Services:
+This starts:
 
-- API: `http://localhost:8000`
-- Dashboard: `http://localhost:8501`
+- PostgreSQL on port `5432`
+- FastAPI on port `8000`
+- Streamlit on port `8501`
 
-## Demo Flow
+## Demo Steps
 
-1. Open the Streamlit dashboard.
-2. Sign up using `admin@example.com` and `password123`.
-3. Go to the Documents tab.
-4. Upload `sample_docs/business_faq.txt`.
-5. Go to the Assistant tab.
-6. Ask:
+1. Open dashboard.
+2. Sign up with `admin@example.com` and `password123`.
+3. Upload `sample_docs/business_faq.txt`.
+4. Ask:
 
 ```text
 I am interested in your services. What is the pricing and can someone contact me?
 ```
 
-7. The assistant answers using the uploaded document.
-8. A lead is automatically created and classified as hot/warm/cold.
-9. Go to the Leads tab to view the captured lead.
-10. Go to Workflows and run:
-    - Generate follow-up
-    - Export CRM CSV
-    - Summarize conversation
-11. Go to Overview and Logs to show analytics and operational visibility.
+5. Show the AI answer.
+6. Show the captured lead.
+7. Run the three workflows.
+8. Show analytics and logs.
 
-## Architecture and Workflow
-
-The platform follows a simple service-based architecture.
-
-```mermaid
-flowchart LR
-    Dashboard["Streamlit Dashboard"] --> API["FastAPI Backend"]
-    API --> Auth["JWT Auth"]
-    API --> DB["PostgreSQL Database"]
-    API --> RAG["RAG Service"]
-    RAG --> Chroma["ChromaDB Vector Store"]
-    API --> Agents["Planner / Executor / Validator"]
-    Agents --> Groq["Groq LLM"]
-    API --> Automation["Workflow Automation"]
-    Automation --> Logs["Workflow Logs"]
-```
-
-### Assistant Flow
-
-1. User sends a message from dashboard or API.
-2. Backend stores the user message.
-3. RAG service retrieves relevant chunks from uploaded documents.
-4. Planner agent decides how to answer.
-5. Executor agent generates the response using conversation memory and document context.
-6. Validator agent checks whether the response is grounded.
-7. Lead service checks whether the message contains buying/contact intent.
-8. Backend stores the assistant response, lead data, and usage metrics.
-
-## API Overview
-
-Main endpoints:
+## Important API Endpoints
 
 - `POST /auth/signup`
 - `POST /auth/login`
@@ -226,43 +169,24 @@ Main endpoints:
 - `GET /analytics/conversation-logs`
 - `GET /analytics/workflow-logs`
 
-## Reliability Features
+## Troubleshooting
 
-- Fallback AI response if Groq key is missing
-- Validator agent for hallucination control
-- Workflow success and failure logs
-- Structured service separation
-- Environment-based configuration
-- Dockerized deployment
+If signup gives a bcrypt/passlib error:
+
+```bash
+pip uninstall bcrypt -y
+pip install bcrypt==4.0.1
+```
+
+If the database does not connect, make sure PostgreSQL is running:
+
+```bash
+docker compose up db
+```
 
 ## Limitations
 
-- PostgreSQL is used for persistent records, as required in the assessment brief.
-- SQLite is still supported as a fallback for quick local testing.
-- The local hash embedding function is lightweight for demo use. For production, use a stronger embedding model.
-- Role-based access is basic and can be expanded with admin/user permissions.
-- Email sending and calendar booking are simulated as workflow outputs.
-
-## 5-Minute Demo Video Script
-
-1. Introduce the problem: small businesses receive many enquiries and need a simple AI assistant.
-2. Show the architecture from the README.
-3. Run the backend and dashboard.
-4. Sign up or log in.
-5. Upload the sample business FAQ document.
-6. Ask a pricing/contact question in the assistant.
-7. Explain RAG, memory, and the Planner/Executor/Validator agents.
-8. Show the captured lead in the Leads tab.
-9. Run the three workflows.
-10. Show Overview analytics and Logs.
-11. End by explaining limitations and future improvements.
-
-## Future Improvements
-
-- Hosted PostgreSQL deployment
-- Real email integration
-- Calendar booking integration
-- Redis caching
-- Streaming assistant responses
-- Webhooks for CRM tools
-- Better embedding model for document search
+- Email sending is simulated.
+- Calendar booking is simulated.
+- The embedding method is simple for demo purposes.
+- SQLite fallback is only for local testing. PostgreSQL is the main database for submission.
