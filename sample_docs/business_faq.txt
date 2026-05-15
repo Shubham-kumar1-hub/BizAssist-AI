@@ -1,0 +1,22 @@
+Company Name: Demo SME Services
+
+Demo SME Services helps small businesses manage customer enquiries, lead follow-ups, and simple operations.
+
+Services:
+- Customer support assistant setup
+- Lead management workflow setup
+- Business automation consultation
+- Monthly analytics reporting
+
+Pricing:
+- Starter plan: 999 INR per month
+- Growth plan: 2499 INR per month
+- Custom plan: based on business requirements
+
+Contact:
+- Email: hello@demosme.com
+- Phone: +91-90000-00000
+
+Policy:
+The assistant should not promise discounts unless the admin confirms them.
+For urgent enquiries, capture the customer's name, email, and phone number.
