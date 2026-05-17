@@ -1,192 +1,355 @@
 # BizAssist AI
 
-BizAssist AI is a simple AI business assistant platform for small and medium businesses. It can answer customer questions using uploaded documents, capture leads, run small automations, and show everything in an admin dashboard.
+BizAssist AI is an AI-powered business assistant project made for small businesses.
 
-This version is intentionally kept simple so it is easy to understand and explain in a 5-minute demo.
+The project can answer customer queries, search uploaded documents using RAG, manage leads, and automate some business workflows.
 
-## Main Features
+The project uses FastAPI for backend APIs, PostgreSQL for database, ChromaDB for vector search, and Streamlit for dashboard.
 
-- FastAPI backend
-- Streamlit dashboard
-- PostgreSQL database
-- SQLAlchemy database models
-- Groq LLM for AI responses
-- ChromaDB for document search / RAG
-- JWT login system
-- Lead capture and hot/warm/cold classification
-- Three workflow automations:
-  - Lead follow-up generation
-  - CRM CSV export
-  - Conversation summary
-- Analytics and logs dashboard
-- Docker Compose setup
+---
 
-## Folder Structure
+# Features
+
+- AI chatbot for business/customer support
+- Upload documents and ask questions from them
+- RAG-based document search using ChromaDB
+- Lead generation and lead classification
+- Workflow automation
+- Analytics dashboard using Streamlit
+- JWT Authentication
+- Docker support
+
+---
+
+# Tech Stack
+
+## Backend
+- FastAPI
+- SQLAlchemy
+- PostgreSQL
+
+## AI & RAG
+- Groq API
+- ChromaDB
+
+## Frontend / Dashboard
+- Streamlit
+
+## Deployment & Containerization
+- Docker
+- Docker Compose
+
+---
+
+# Project Structure
 
 ```text
 app/
-  main.py       FastAPI routes and API logic
-  config.py     Loads settings from .env
-  database.py   Database connection
-  models.py     Database tables
-  auth.py       Login, password hashing, JWT
-  ai.py         Groq, RAG, lead logic, workflows
-
+│
+├── main.py              # Main FastAPI app
+├── ai.py                # AI logic and RAG functions
+├── auth.py              # Authentication logic
+├── models.py            # Database models
+├── database.py          # Database connection
+├── routes/              # API routes
+│
 dashboard/
-  streamlit_app.py  Admin dashboard
-
-sample_docs/
-  business_faq.txt  Sample file for testing document upload
+│
+├── streamlit_app.py     # Streamlit dashboard
+│
+data/                    # Uploaded files / vector db data
+│
+Dockerfile
+docker-compose.yml
+README.md
 ```
 
-## How The Project Works
+---
 
-1. Admin logs in from the dashboard.
-2. Admin uploads a business document.
-3. The backend reads the document and stores chunks in ChromaDB.
-4. Customer asks a question.
-5. The app searches relevant document chunks.
-6. Groq generates an answer using the document context.
-7. If the customer shows interest, the app creates a lead.
-8. Admin can view leads, logs, documents, and analytics.
-9. Admin can run simple automations.
+# Main Functionalities
 
-## Setup
+## 1. AI Chat Assistant
 
-### 1. Create `.env`
+Users can ask business-related questions and the AI generates responses using Groq LLM.
 
-Create a `.env` file in the project root:
+---
 
-```env
-APP_NAME=BizAssist AI
-SECRET_KEY=my-secret-key
-DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/bizassist
-GROQ_API_KEY=your-groq-api-key
-GROQ_MODEL=llama-3.1-8b-instant
-CHROMA_PATH=./data/chroma
+## 2. Document Upload & RAG
+
+Users can upload PDFs or text files.
+
+The documents are:
+- Split into chunks
+- Stored in ChromaDB
+- Retrieved during question answering
+
+When a user asks a question, relevant chunks are searched and passed to the AI model.
+
+---
+
+## 3. Lead Management
+
+The system can automatically create leads based on customer conversations.
+
+Example:
+- "I want pricing"
+- "Can I book a demo?"
+
+The project classifies leads as:
+- Hot
+- Warm
+- Cold
+
+---
+
+## 4. Workflow Automation
+
+The project supports:
+- Follow-up generation
+- Conversation summaries
+- CSV export for CRM-like functionality
+
+---
+
+## 5. Dashboard
+
+The Streamlit dashboard shows:
+- Leads
+- Conversations
+- Analytics
+- Workflow logs
+
+---
+
+# Architecture / Workflow
+
+## Overall Workflow
+
+```text
+User
+   ↓
+FastAPI Backend
+   ↓
+AI Layer (Groq API)
+   ↓
+ChromaDB (RAG Search)
+   ↓
+PostgreSQL Database
+   ↓
+Streamlit Dashboard
 ```
 
-For quick testing without PostgreSQL, you can temporarily use:
+---
 
-```env
-DATABASE_URL=sqlite:///./data/business_assistant.db
-```
+# Step-by-Step Working
 
-### 2. Create Virtual Environment
+## 1. User Sends Message
+
+The user sends a query to the FastAPI backend.
+
+Example:
+- "What services do you provide?"
+- "Give pricing details"
+
+---
+
+## 2. Document Search (RAG)
+
+The backend searches uploaded documents from ChromaDB.
+
+Steps:
+- Documents are split into chunks
+- Chunks are converted into embeddings
+- Relevant chunks are retrieved based on user question
+
+---
+
+## 3. AI Response Generation
+
+The retrieved context and user question are sent to Groq LLM.
+
+The AI generates the final response.
+
+---
+
+# Lead Detection Workflow
+
+If the message contains words like:
+- pricing
+- demo
+- contact
+- call
+
+then the system automatically creates a lead.
+
+Lead types:
+- Hot
+- Warm
+- Cold
+
+The lead is stored in PostgreSQL database.
+
+---
+
+# Workflow Automation
+
+The project also supports:
+- Follow-up generation
+- Conversation summary
+- CRM CSV export
+
+Workflow logs are stored in database.
+
+---
+
+# Dashboard Workflow
+
+The Streamlit dashboard reads data from backend/database and displays:
+- Leads
+- Conversations
+- Workflow logs
+- Analytics
+
+---
+
+# Database Used
+
+PostgreSQL is used for:
+- Users
+- Conversations
+- Leads
+- Workflow logs
+
+---
+
+# Vector Database Used
+
+ChromaDB is used for:
+- Document embeddings
+- Semantic search
+- RAG retrieval
+
+---
+
+# Setup Instructions
+
+## 1. Clone Repository
 
 ```bash
-python -m venv .venv
-.venv\Scripts\activate
+git clone https://github.com/Shubham-kumar1-hub/BizAssist-AI.git
+cd BizAssist-AI
 ```
 
-### 3. Install Requirements
+---
+
+## 2. Create Environment File
+
+Create a `.env` file in root folder.
+
+Example:
+
+```env
+DATABASE_URL=postgresql://postgres:postgres@db:5432/bizassist
+GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL=llama3-8b-8192
+```
+
+---
+
+## 3. Run using Docker
+
+```bash
+docker-compose up --build
+```
+
+This will start:
+- FastAPI backend
+- PostgreSQL database
+- Streamlit dashboard
+
+---
+
+## 4. Access Application
+
+### FastAPI Backend
+```text
+http://localhost:8000
+```
+
+### Swagger Docs
+```text
+http://localhost:8000/docs
+```
+
+### Streamlit Dashboard
+```text
+http://localhost:8501
+```
+
+---
+
+## 5. Stop Containers
+
+```bash
+docker-compose down
+```
+
+---
+
+# Alternative Manual Setup
+
+## Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Start PostgreSQL
+## Run Backend
 
 ```bash
-docker compose up db
-```
-
-### 5. Start Backend
-
-Open another terminal:
-
-```bash
-.venv\Scripts\activate
 uvicorn app.main:app --reload
 ```
 
-Backend:
-
-```text
-http://localhost:8000
-```
-
-API docs:
-
-```text
-http://localhost:8000/docs
-```
-
-### 6. Start Dashboard
-
-Open another terminal:
+## Run Streamlit Dashboard
 
 ```bash
-.venv\Scripts\activate
 streamlit run dashboard/streamlit_app.py
 ```
 
-Dashboard:
+---
 
-```text
-http://localhost:8501
-```
+# API Endpoints
 
-## Docker Full Run
+## Authentication
+- `/auth/register`
+- `/auth/login`
 
-```bash
-docker compose up --build
-```
+## Chat
+- `/chat`
 
-This starts:
+## Documents
+- `/documents/upload`
+- `/documents`
 
-- PostgreSQL on port `5432`
-- FastAPI on port `8000`
-- Streamlit on port `8501`
+## Leads
+- `/leads`
 
-## Demo Steps
+## Workflows
+- `/workflows/run`
 
-1. Open dashboard.
-2. Sign up with `admin@example.com` and `password123`.
-3. Upload `sample_docs/business_faq.txt`.
-4. Ask:
+---
 
-```text
-I am interested in your services. What is the pricing and can someone contact me?
-```
+# Future Improvements
 
-5. Show the AI answer.
-6. Show the captured lead.
-7. Run the three workflows.
-8. Show analytics and logs.
+- Better embeddings model
+- Real CRM integration
+- LangGraph based multi-agent workflow
+- Cloud deployment
+- Better UI
+- Real-time chat support
 
-## Important API Endpoints
+---
 
-- `POST /auth/signup`
-- `POST /auth/login`
-- `POST /assistant/chat`
-- `POST /documents/upload`
-- `GET /documents`
-- `POST /leads`
-- `GET /leads`
-- `POST /workflows/run`
-- `GET /analytics/summary`
-- `GET /analytics/conversation-logs`
-- `GET /analytics/workflow-logs`
+# Author
 
-## Troubleshooting
-
-If signup gives a bcrypt/passlib error:
-
-```bash
-pip uninstall bcrypt -y
-pip install bcrypt==4.0.1
-```
-
-If the database does not connect, make sure PostgreSQL is running:
-
-```bash
-docker compose up db
-```
-
-## Limitations
-
-- Email sending is simulated.
-- Calendar booking is simulated.
-- The embedding method is simple for demo purposes.
-- SQLite fallback is only for local testing. PostgreSQL is the main database for submission.
+Shubham Kumar Jha
